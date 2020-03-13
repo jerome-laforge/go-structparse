@@ -76,6 +76,10 @@ func parseRecursive(parsers Parsers, val reflect.Value) reflect.Value {
 		}
 
 		for i := 0; i < val.NumField(); i++ {
+			if !dst.Field(i).CanSet() {
+				// this case is typically for unexported field, ignore it
+				continue
+			}
 			res := parseRecursive(parsers, val.Field(i))
 			if res != reflect.ValueOf(nil) {
 				dst.Field(i).Set(res)
