@@ -78,10 +78,22 @@ func TestParsing(t *testing.T) {
 		assert.EqualValues(t, "boop", c.Fake["test2"]["test1"])
 	})
 
-    t.Run("Handles non-supported types", func(t *testing.T) {
+	t.Run("Handles non-supported types", func(t *testing.T) {
 		fem := FakeEnvMapper{"TEST", "REPLACED"}
-        c := struct {Fake bool} { false }
-        Strings(&fem, &c)
-    })
+		c := struct{ Fake bool }{false}
+		Strings(&fem, &c)
+	})
 
+	t.Run("map", func(t *testing.T) {
+		fem := FakeEnvMapper{"TEST", "REPLACED"}
+		type foo struct {
+			Name string
+		}
+		c := map[string]foo{"1": {"TEST"}, "2": {"TEST"}}
+
+		Strings(&fem, &c)
+
+		assert.EqualValues(t, "REPLACED", c["1"].Name)
+		assert.EqualValues(t, "REPLACED", c["2"].Name)
+	})
 }
